@@ -1,0 +1,41 @@
+pipeline{
+    agent any   
+    tools {
+    maven 'Maven'
+    } 
+    stages{
+        stage("Checkout Code"){
+            steps{
+                echo "========Checking code from repo========"
+                checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Jana3421/simple-java-maven-app.git']]])           }
+            post{
+                success{
+                    echo "========code checkout completed========"
+                }
+                failure{
+                    echo "========code checkout failed========"
+                }
+            }
+        }
+        stage("Execute Job details"){
+            steps {
+                sh '''echo $WORKSPACE
+                      echo $BUILD_ID
+                      echo $JENKINS_HOME'''
+            }
+        }
+        stage("build"){
+            steps{
+                sh 'mvn clean package'
+            }
+            post{
+                success{
+                    echo "====Build done successfully===="
+                }
+                failure{
+                    echo "====Build failed===="
+                }
+            }
+        }
+    }
+}
